@@ -6,7 +6,8 @@
 .pnp.js
 /.bin
 /.cache
-
+/client/node_modules
+/server/node_modules
 # testing
 /coverage
 

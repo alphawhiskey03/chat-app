@@ -1,0 +1,13 @@
+$gray-600:rgba(245,245,245);
+
+@import "~bootstrap/scss/bootstrap";
+
+.main-cont{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-div:hover{
+  background-color: rgb(244, 247, 247);
+}
