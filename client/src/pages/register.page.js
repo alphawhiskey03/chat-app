@@ -3,7 +3,7 @@ import { useState } from "react";
 import FormUtil from "../utils/form.utils";
 import { Form, Button, Card } from "react-bootstrap";
 import { useMutation } from "@apollo/client";
-import { REGISTER_USER_QUERY } from "../gql/queries";
+import { REGISTER_USER_MUTATION } from "../gql/queries";
 import { useNavigate } from "react-router-dom";
 import { useAuthDispatch } from "../utils/auth.util";
 const Register = () => {
@@ -17,7 +17,7 @@ const Register = () => {
     confirmPassword: "",
   });
   const navigate = useNavigate();
-  const [register, { loading }] = useMutation(REGISTER_USER_QUERY, {
+  const [register, { loading }] = useMutation(REGISTER_USER_MUTATION, {
     update(_, { data: { RegisterUser: userData } }) {
       dispatch({
         type:"LOGIN",
@@ -58,7 +58,7 @@ const Register = () => {
             />
             <Text
               className={
-                errors && errors.username ? "text-danger" : "form-text"
+                errors && errors.username ? "text-danger" : "text-primary"
               }
             >
               {errors && errors.username
@@ -77,7 +77,7 @@ const Register = () => {
               onChange={onChange}
             />
             <Text
-              className={errors && errors.email ? "text-danger" : "form-text"}
+              className={errors && errors.email ? "text-danger" : "text-primary"}
             >
               {errors && errors.email
                 ? errors.email
@@ -96,7 +96,7 @@ const Register = () => {
             />
             <Text
               className={
-                errors && errors.password ? "text-danger" : "form-text"
+                errors && errors.password ? "text-danger" : "text-primary"
               }
             >
               {errors && errors.password
@@ -116,7 +116,7 @@ const Register = () => {
             />
             <Text
               className={
-                errors && errors.confirmPassword ? "text-danger" : "form-text"
+                errors && errors.confirmPassword ? "text-danger" : "text-primary"
               }
             >
               {" "}

@@ -28,7 +28,6 @@ const validateRegisterUser = (username,email,password,confirmPassword)=>{
 
 const validateLoginUser=(username,password)=>{
     let errors={}
-    console.log(username,password)
     if(username.trim()===""){
         errors.username="the username cannot be empty"
     }

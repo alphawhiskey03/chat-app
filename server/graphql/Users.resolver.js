@@ -1,18 +1,15 @@
 const bcrypt = require("bcrypt");
-const Message = require("../models/messages");
 const User = require("../models/users");
 const {
   validateRegisterUser,
   validateLoginUser,
 } = require("../utils/validators.utils");
-const { PubSub } = require("graphql-subscriptions");
 const {
   UserInputError,
   AuthenticationError,
 } = require("apollo-server-express");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../config");
-const { off } = require("../models/messages");
 
 const generateToken = async (username, email, id) => {
   const token = jwt.sign(
@@ -28,7 +25,21 @@ const generateToken = async (username, email, id) => {
   );
   return token;
 };
-const pubsub = new PubSub();
+
+const findLatestMessage=async (latestMessage,user)=>{
+  let userMessages=latestMessage.map(lM=>{
+    if(lM.to===user || lM.from===user){
+      return lM
+    }
+  }).filter(val=>typeof val!=='undefined')
+let newest=userMessages[0];
+for(let i=0;i<userMessages.length;i++){
+  if(new Date(userMessages[i].createdAt)>new Date(newest.createdAt)){
+    newest=userMessages[i]
+  }
+}
+return newest
+}
 module.exports = {
   Query: {
     getUsers: async (_, __, { user }) => {
@@ -66,22 +77,31 @@ module.exports = {
           },
           {
             $sort: {
-              createdAt: -1,
+              createdAt: 1,
             },
           },
         ]);
-        users = users.map((newus) => {
-          const temp = newus.latestMessage[newus.latestMessage.length - 1];
-          if (
-            temp &&
-            (temp.from === user.username || temp.to === user.username)
-          ) {
+        users = users.map((newus,i) => {
+          newus.latestMessage.sort((a,b)=>{
+            return new Date(a.createdAt)- new Date(b.createdAt)
+          })
+          // if(i==0){
+
+          // findLatestMessage(newus.latestMessage,user.username)
+          // }
+          const temp=findLatestMessage(newus.latestMessage,user.username)
+          // const temp = newus.latestMessage[newus.latestMessage.length - 1];
+       
+          // if (
+          //   temp &&
+          //   (temp.from === user.username || temp.to === user.username)
+          // ) {
             latestMessage = temp;
             newus.latestMessage = latestMessage;
-          } else delete newus.latestMessage;
+          // } else delete newus.latestMessage;
           return newus;
         });
-        console.log(users);
+        // console.log(users)
         return users;
       } catch (err) {
         throw new Error(err);

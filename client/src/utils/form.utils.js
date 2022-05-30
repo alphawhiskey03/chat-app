@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 const FormUtil = (callback, initialState = {}) => {
   const [values, setValues] = useState(initialState);
 

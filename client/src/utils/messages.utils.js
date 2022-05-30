@@ -8,7 +8,8 @@ const MessagesStateContext = createContext();
 const MessagesDispatchContext = createContext();
 
 const MessagReducer = (state, action) => {
-  let usersCopy;
+  let usersCopy,userIndex;
+  const { username,message, messages } = action.payload;
   switch (action.type) {
     case "SET_USERS":
       return { ...state, users: action.payload };
@@ -23,13 +24,33 @@ const MessagReducer = (state, action) => {
       };
     case "SET_USER_MESSAGE":
       usersCopy = state.users;
-      const { username, messages } = action.payload;
-      const userIndex = usersCopy.findIndex((u) => u.username === username);
+       userIndex = usersCopy.findIndex((u) => u.username === username);
       usersCopy[userIndex] = { ...usersCopy[userIndex], messages };
       return {
         ...state,
         users: usersCopy,
       };
+    case "ADD_MESSAGE":
+      console.log(action.payload)
+      console.log(message)
+      usersCopy = state.users;
+       userIndex = usersCopy.findIndex((u) => u.username === username);
+       let temp={
+         ...usersCopy[userIndex],
+         messages:[
+          message,
+          ...usersCopy[userIndex].messages,
+         ]
+       }
+       usersCopy[userIndex]=temp;
+
+       return {
+         ...state,
+         users:usersCopy
+       }
+
+
+
     default:
       throw new Error(`Unknown action type ${action.type}`);
   }

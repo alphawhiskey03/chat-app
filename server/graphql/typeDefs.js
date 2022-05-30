@@ -28,7 +28,6 @@ module.exports = gql`
   }
   input MessageInput {
     to: String!
-    from: String!
     content: String!
   }
   input UserInput {

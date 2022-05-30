@@ -13,7 +13,6 @@ if (token) {
   let decodedToken = jwtDecode(token);
 
   if (Date.now() > decodedToken.exp * 1000) {
-    console.log("Token Expired");
     localStorage.removeItem("token");
   } else {
     initialState.user = decodedToken;
@@ -41,7 +40,6 @@ const AuthReducer = (state, action) => {
 
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(AuthReducer, { ...initialState });
-  console.log(dispatch);
   return (
     <AuthStateContext.Provider value={state}>
       <AuthReducerContext.Provider value={dispatch}>

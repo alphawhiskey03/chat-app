@@ -1,5 +1,5 @@
 import "./App.scss";
-import { Button, Container, Row, Col } from "react-bootstrap";
+import {  Container, Row, Col } from "react-bootstrap";
 import Register from "./pages/register.page";
 import Login from "./pages/login,page";
 import Home from "./pages/home.page";

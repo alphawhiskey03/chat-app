@@ -1,44 +1,19 @@
-const bcrypt = require("bcrypt");
 const Message = require("../models/messages");
 const User = require("../models/users");
-const {
-  validateRegisterUser,
-  validateLoginUser,
-} = require("../utils/validators.utils");
-const { PubSub } = require("graphql-subscriptions");
+const { PubSub, withFilter } = require("graphql-subscriptions");
 const {
   UserInputError,
   AuthenticationError,
 } = require("apollo-server-express");
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET_KEY } = require("../config");
-
-const generateToken = async (username, email, id) => {
-  const token = jwt.sign(
-    {
-      email,
-      username,
-      id,
-    },
-    JWT_SECRET_KEY,
-    {
-      expiresIn: "1h",
-    }
-  );
-  return token;
-};
 const pubsub = new PubSub();
 module.exports = {
   Query: {
     message: async (_, { id }, { hi }) => {
-      console.log(id);
-
       const msg = await Message.findById(id);
       return msg;
     },
     getMessages: async (_, { from }, { user }) => {
       try {
-        console.log(from);
         if (!user) throw new UserInputError("you're not authenticated");
         const fromUser = await User.findOne({ username: from });
         if (!fromUser) throw new UserInputError("No user found");
@@ -47,7 +22,7 @@ module.exports = {
             { from: from, to: user.username },
             { from: user.username, to: from },
           ],
-        }).sort({ createdAt: 1 });
+        }).sort({ createdAt: -1 });
         return message;
       } catch (err) {
         console.log(err);
@@ -61,7 +36,6 @@ module.exports = {
         if (!user) throw new AuthenticationError("You are not authenticated");
         const { to, from, content } = messageInput;
         const recepient = await User.findOne({ username: to });
-        console.log(recepient);
         if (!recepient) {
           throw new UserInputError("Recepient not found");
         } else if (
@@ -75,16 +49,17 @@ module.exports = {
         }
         const newMessage = new Message({
           to,
-          from,
+          from: user.username,
           content,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         });
         const res = await newMessage.save();
-        pubsub.publish("message_created", {
+
+        pubsub.publish("MESSAGE_CREATED", {
           messageCreated: {
             to,
-            from,
+            from: user.username,
             content,
           },
         });
@@ -101,7 +76,24 @@ module.exports = {
   },
   Subscription: {
     messageCreated: {
-      subscribe: () => pubsub.asyncIterator("message_created"),
+      subscribe: withFilter(
+        (_, __, { user }) => {
+          if (!user) throw new AuthenticationError("Not authorized");
+          return pubsub.asyncIterator("MESSAGE_CREATED");
+        },
+        ({messageCreated}, _, { user }) => {
+          console.log("((OSS<SK")
+          console.log(user.username)
+          console.log(messageCreated)
+          if (
+            messageCreated.to === user.username ||
+            messageCreated.from === user.username
+          ) {
+            return true;
+          }
+          return false;
+        }
+      ),
     },
   },
 };

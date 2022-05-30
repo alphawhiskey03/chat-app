@@ -1,13 +1,59 @@
-$gray-600:rgba(245,245,245);
+$gray-600: rgba(245, 245, 245);
 
 @import "~bootstrap/scss/bootstrap";
 
-.main-cont{
+.main-cont {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.user-div:hover{
+.user-div:hover {
   background-color: rgb(244, 247, 247);
+}
+
+.message-box {
+  overflow-y: auto;
+  height: 500px;
+}
+.sent-message {
+  margin-left: auto !important;
+}
+.recieved-message {
+  margin-right: auto !important;
+}
+
+.user-image {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius:"50%"
+}
+
+.message-box{
+  height: 500px;
+  overflow-y: scroll;
+}
+
+.message-input::placeholder{
+  color:rgba(0,0,0,50%)
+  
+}
+
+.info-text{
+  color:rgba(0,0,0,50%);
+  text-align:center;
+  margin-bottom:1rem
+
+}
+
+@media only screen and (max-width:912px){
+  .user-content{
+    display:none
+  }
+  .user-image{
+    width:30px;
+    height: 30px;
+  }
+
 }

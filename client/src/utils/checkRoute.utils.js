@@ -1,9 +1,7 @@
-import { Route,Navigate } from "react-router-dom";
-import Login from "../pages/login,page";
+import {Navigate } from "react-router-dom";
 import { useAuthState } from "./auth.util";
 const CheckRoute = (props) => {
     const {user}=useAuthState()
-    console.log(user)
     if(!user && props.authenticated){
         return <Navigate to="/login"/>
     }

@@ -1,7 +1,6 @@
-import { Row, Col, Button, Image } from "react-bootstrap";
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { Col, Image } from "react-bootstrap";
+import { useQuery } from "@apollo/client";
 import classnames from "classnames";
-import { useNavigate } from "react-router-dom";
 import { GET_USERS_QUERY } from "../../gql/queries";
 import {
   useMessageDispatch,
@@ -11,10 +10,8 @@ const Users = () => {
   const dispatch = useMessageDispatch();
   const { users } = useMessageState();
   const selectedUser = users?.find((user) => user.selected === true)?.username;
-  console.log(dispatch);
   const { loading } = useQuery(GET_USERS_QUERY, {
     onCompleted: (data) => {
-      console.log(data.getUsers);
       dispatch({
         type: "SET_USERS",
         payload: [...data.getUsers],
@@ -35,21 +32,26 @@ const Users = () => {
       return (
         <div
           role="button"
-          className={classnames("user-div d-flex p-2", {
-            "bg-white user-div d-flex p-2": selected,
+          className={classnames("user-div d-flex justify-content-center justify-content-md-start bg-secondary", {
+            "bg-white user-div d-flex": selected,
           })}
           key={mp.username}
           onClick={(e) =>
             dispatch({ type: "SET_SELECTED_USER", payload: mp.username })
           }
+          style={
+            {
+              overflowX:"hide",
+              width:"10px !important",
+            }
+          }
         >
           <Image
             src={mp.imageUrl}
-            className="m-2"
+            className="user-image m-2"
             roundedCircle
-            style={{ width: 50, height: 50, objectFit: "cover" }}
           />
-          <div>
+          <div className="user-content">
             <p className="text-success">{mp.username}</p>
             <p className="font-weight-light">
               {mp.latestMessage
@@ -62,7 +64,7 @@ const Users = () => {
     });
   }
 
-  return <>{userMarkup}</>;
+  return <Col xs={2} md={4}>{userMarkup}</Col>;
 };
 
 export default Users;

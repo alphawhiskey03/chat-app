@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, Button, Card } from "react-bootstrap";
 import FormUtil from "../utils/form.utils";
 import { useMutation } from "@apollo/client";
-import { LOGIN_USER_QUERY } from "../gql/queries";
+import { LOGIN_USER_MUTATION } from "../gql/queries";
 import { useNavigate } from "react-router-dom";
 import { useAuthDispatch } from "../utils/auth.util";
 const Login = () => {
@@ -15,7 +15,7 @@ const Login = () => {
     username: "",
     password: "",
   });
-  const [login, { loading }] = useMutation(LOGIN_USER_QUERY, {
+  const [login, { loading }] = useMutation(LOGIN_USER_MUTATION, {
     update(_, { data: { login: userData } }) {
       dispatch({
         type: "LOGIN",

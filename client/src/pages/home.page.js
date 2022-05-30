@@ -1,28 +1,51 @@
-import { Row, Col, Button, Image } from "react-bootstrap";
+import { Row, Col, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { useState, useEffect } from "react";
+import {useSubscription } from "@apollo/client";
+import {MESSAGE_CREATED_SUBSCRIPTION} from "../gql/queries"
+import { useEffect } from "react";
 import Users from "../components/home/users";
 import { useAuthDispatch } from "../utils/auth.util";
 import { useApolloClient } from "@apollo/client";
 import Messages from "../components/home/messages";
+// import { useMessageDispatch } from "../utils/messages.utils";
 const Home = () => {
   const navigate = useNavigate();
-  const dispatch = useAuthDispatch();
+  const authDispatch = useAuthDispatch();
+  // const messageDispatch=useMessageDispatch();
+  // const {user}=useAuthState()
   const client = useApolloClient();
-  const [selectedUser, setSelectedUser] = useState(null);
 
+  const {data,error}=useSubscription(MESSAGE_CREATED_SUBSCRIPTION)
   const logout = () => {
-    dispatch({
+    authDispatch({
       type: "LOGOUT",
     });
     client.resetStore();
     navigate("/login");
   };
 
+  useEffect(()=>{
+    console.log(data,error);
+    if(error){
+      console.log(error)
+    }
+    if(data){
+      console.log("hi")
+      console.log(data)
+    //   const message=data.messageCreated
+    //   const otherUser=user.username===message.to?message.from:message.to
+    //   messageDispatch({
+    //     type:"ADD_MESSAGE",
+    //     payload:{
+    //       username:otherUser, 
+    //       message
+    //     }
+    // })
+  }
+},[data,error])
   return (
-    <div style={{ background: "black" }}>
-      <Row className="p-3 justify-content-center">
+    <div>
+      <Row className="justify-content-center p-3">
         <Col>
           <Link style={{ textDecoration: "none" }} to="/Register">
             Register
@@ -41,17 +64,9 @@ const Home = () => {
           </Button>
         </Col>
       </Row>
-      <Row className="bg-white" style={{ borderRadius: "35px 35px 0 0" }}>
-        <Col
-          xs={4}
-          className="p-0 bg-secondary"
-          style={{ borderRight: "1px solid grey" }}
-        >
+      <Row className="bg-white">
           <Users />
-        </Col>
-        <Col xs={6}>
           <Messages />
-        </Col>
       </Row>
     </div>
   );
