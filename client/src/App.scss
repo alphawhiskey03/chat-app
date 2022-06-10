@@ -2,6 +2,14 @@ $gray-600: rgba(245, 245, 245);
 
 @import "~bootstrap/scss/bootstrap";
 
+
+body{
+  background: black;
+}
+input::placeholder{
+  color:rgba(0,0,0,50%) !important
+
+}
 .main-cont {
   display: flex;
   justify-content: center;
@@ -47,9 +55,46 @@ $gray-600: rgba(245, 245, 245);
 
 }
 
+
+.reaction-icons-popover{
+  height:44px;
+}
+.reaction-icons{
+  text-decoration:none;
+  padding:2px;
+  font-size:24px;
+  border:none;
+  box-shadow:none;
+  transition: 0.2s ease-in-out;
+
+  &:hover{
+    font-size: 34px;
+  }
+}
+.btn:focus{
+ box-shadow:none;
+}
+
+.reactions-div{
+  position: absolute;
+  right:-2px;
+  bottom:-25px;
+}
+.user-search{
+  &:focus{
+    box-shadow: none;
+    border:1px solid #198754 ;
+    outline:#198754
+  };
+  
+}
+.user-search::placeholder{
+  color:rgba(0,0,0,50%)
+}
 @media only screen and (max-width:912px){
   .user-content{
-    display:none
+    display:none;
+
   }
   .user-image{
     width:30px;

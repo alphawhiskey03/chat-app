@@ -1,4 +1,4 @@
-import { useEffect ,useRef} from "react";
+import { useEffect, useRef } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_MESSAGES_QUERY, SEND_MESSAGE_MUTATION } from "../../gql/queries";
 import {
@@ -15,28 +15,33 @@ const Messages = () => {
   });
   const { users } = useMessageState();
   const dispatch = useMessageDispatch();
-  const messageEndRef=useRef(null)
+  const messageEndRef = useRef(null);
   const selectedUser = users?.find((user) => user.selected === true);
   const message = selectedUser?.messages;
-  const [getMessages, { loading: messegesLoading, data: messageData, error }] =
+
+
+  const [getMessages, { loading: messegesLoading, data: messageData }] =
     useLazyQuery(GET_MESSAGES_QUERY);
 
-  const [sendMessage, { loading }] = useMutation(SEND_MESSAGE_MUTATION, {
+  const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION, {
+    onCompleted(data){
+      console.log(data)
+      clearValues();
+    },
     onError(err) {
       console.log(err);
-    },
+    }, 
   });
 
-  const scrollIntoBottom=()=>{
-    messageEndRef.current?.scrollIntoView({behavior:"smooth"})
-  }
   useEffect(() => {
     if (selectedUser && !selectedUser.messages) {
+      clearValues()
       getMessages({ variables: { from: selectedUser.username } });
     }
   }, [selectedUser]);
   useEffect(() => {
     if (messageData) {
+      console.log("new new message")
       dispatch({
         type: "SET_USER_MESSAGE",
         payload: {
@@ -56,9 +61,10 @@ const Messages = () => {
   } else if (messegesLoading) {
     messageMarkup = <p className="info-text">Loading...</p>;
   } else if (message.length > 0) {
-    messageMarkup = message.map((message, i) => (
-      <Message key={message.id} message={message} />
-    ));
+    messageMarkup = "";
+    messageMarkup = message.map((message, i) => {
+      return <Message key={message._id} message={message} />;
+    });
   } else if (message.length === 0) {
     messageMarkup = (
       <p className="info-text">You're now connected send your first message</p>
@@ -76,14 +82,18 @@ const Messages = () => {
         },
       },
     });
-    clearValues();
   }
 
   return (
     <Col xs={10} md={8}>
-      <div className={"d-flex flex-column-reverse message-box"}>{messageMarkup}<div ref={messageEndRef}/></div>
+      <div
+        className={"d-flex flex-column-reverse message-box px-2 pb-3"}
+        ref={messageEndRef}
+      >
+        {messageMarkup}
+      </div>
       <div>
-        <Form onSubmit={onSubmit} >
+        <Form onSubmit={onSubmit}>
           <Form.Group className="d-flex align-items-center">
             <Form.Control
               type="text"
@@ -96,10 +106,11 @@ const Messages = () => {
               onChange={onChange}
             />
             <span className="px-1" role="button" onClick={onSubmit}>
-            <BiSend size="2rem" style={{color:"#0d6efd"}}/>
+              <BiSend size="2rem" style={{ color: "#0d6efd" }} />
             </span>
           </Form.Group>
         </Form>
+        <p className={"p-2"}  style={{textAlign:"center",color: "#adb5bd" }}>Copyrights 2022</p>
       </div>
     </Col>
   );

@@ -21,7 +21,7 @@ const Login = () => {
         type: "LOGIN",
         payload: userData,
       });
-      navigate("/");
+      window.location.href="/"
     },
     onError(err) {
       console.log(err.graphQLErrors[0]);
@@ -35,8 +35,8 @@ const Login = () => {
     login();
   }
   return (
-    <>
-      <Card className="p-3 mt-4">
+    <div className="d-flex justify-content-center align-items-center my-5">
+      <Card className="p-3 mt-4" style={{width:400}}>
         <Form className="mt-3" onSubmit={onSubmit}>
           <h1>Login</h1>
 
@@ -88,7 +88,7 @@ const Login = () => {
           </Button>
         </div>
       </Card>
-    </>
+      </div>
   );
 };
 

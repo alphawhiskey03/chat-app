@@ -1,15 +1,15 @@
 import { useContext, createContext, useReducer } from "react";
 
 const initialState = {
-  users: null,
+  users: [],
 };
 
 const MessagesStateContext = createContext();
 const MessagesDispatchContext = createContext();
 
 const MessagReducer = (state, action) => {
-  let usersCopy,userIndex;
-  const { username,message, messages } = action.payload;
+  let usersCopy,userIndex,temp;
+  const { username,message, messages,reaction } = action.payload;
   switch (action.type) {
     case "SET_USERS":
       return { ...state, users: action.payload };
@@ -25,22 +25,22 @@ const MessagReducer = (state, action) => {
     case "SET_USER_MESSAGE":
       usersCopy = state.users;
        userIndex = usersCopy.findIndex((u) => u.username === username);
+       console.log(usersCopy[userIndex])
       usersCopy[userIndex] = { ...usersCopy[userIndex], messages };
       return {
-        ...state,
+        ...state, 
         users: usersCopy,
       };
     case "ADD_MESSAGE":
-      console.log(action.payload)
-      console.log(message)
       usersCopy = state.users;
        userIndex = usersCopy.findIndex((u) => u.username === username);
-       let temp={
+        temp={
          ...usersCopy[userIndex],
          messages:[
-          message,
+          {...message,message_reactions:[]},
           ...usersCopy[userIndex].messages,
-         ]
+         ],
+         latestMessage:message,
        }
        usersCopy[userIndex]=temp;
 
@@ -48,6 +48,49 @@ const MessagReducer = (state, action) => {
          ...state,
          users:usersCopy
        }
+    case "ADD_REACTION":
+      usersCopy = state.users;
+      userIndex = usersCopy.findIndex((u) => u.username === username);
+      console.log(username);
+      console.log(userIndex)
+      temp={...usersCopy[userIndex]}
+      console.log(temp)
+      const messageIndex=temp.messages?.findIndex(m=>m._id===reaction.message._id)
+      console.log(messageIndex)
+      if(messageIndex > -1){
+      console.log(usersCopy)
+        let messageCopy=[...temp.messages]
+        let reactionsCopy=[...messageCopy[messageIndex].message_reactions]
+      
+        const reactionIndex=reactionsCopy.findIndex(r=>r._id===reaction._id)
+
+        if(reactionIndex > -1){
+          reactionsCopy[reactionIndex]=reaction
+        }else{
+          console.log("new reaction")
+          let message_reactions=reaction
+          console.log(message_reactions)
+          reactionsCopy=[...reactionsCopy,message_reactions]
+        }
+
+        messageCopy[messageIndex]={
+          ...messageCopy[messageIndex],
+          message_reactions:reactionsCopy
+        }
+
+        temp={...temp,messages:messageCopy}
+        usersCopy[userIndex]=temp
+      }
+
+      return {
+        ...state,
+        
+      }
+      case "LOGOUT":
+        return {
+          ...state,
+          users:null
+        }
 
 
 
@@ -59,11 +102,12 @@ const MessagReducer = (state, action) => {
 export const MessageProvider = ({ children }) => {
   const [state, dispatch] = useReducer(MessagReducer, initialState);
   return (
-    <MessagesStateContext.Provider value={state}>
       <MessagesDispatchContext.Provider value={dispatch}>
+            <MessagesStateContext.Provider value={state}>
+
         {children}
+        </MessagesStateContext.Provider>
       </MessagesDispatchContext.Provider>
-    </MessagesStateContext.Provider>
   );
 };
 

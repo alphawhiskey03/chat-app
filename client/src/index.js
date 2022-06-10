@@ -29,7 +29,8 @@ let httpLink = createHttpLink({
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://localhost:4000/subscriptions",
+    url: "ws://localhost:4000/graphql",
+    reconnect:true,
     connectionParams: {
       authToken: `Bearer ${localStorage.getItem("token")}`,
     },

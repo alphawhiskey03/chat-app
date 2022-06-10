@@ -38,31 +38,65 @@ export const GET_USERS_QUERY = gql`
 export const GET_MESSAGES_QUERY = gql`
   query ($from: String!) {
     getMessages(from: $from) {
+      _id
       from
       to
       content
       createdAt
+      message_reactions {
+        _id
+        content
+      }
     }
   }
 `;
 
-export const SEND_MESSAGE_MUTATION=gql`
-mutation($messageInput: MessageInput!){
-  sendMessage(messageInput:$messageInput){
-    to
-    from 
-    content
+export const SEND_MESSAGE_MUTATION = gql`
+  mutation ($messageInput: MessageInput!) {
+    sendMessage(messageInput: $messageInput) {
+      to
+      from
+      content
+      _id
+    }
   }
-}
 `;
 
-
-export const MESSAGE_CREATED_SUBSCRIPTION=gql`
-subscription{
-  messageCreated {
-    content
-    to
-    from
+export const MESSAGE_CREATED_SUBSCRIPTION = gql`
+  subscription {
+    messageCreated {
+      content
+      to
+      from
+      _id
+    }
   }
-}
-`
+`;
+
+export const REACT_TO_MESSAGE = gql`
+  mutation ($id: String!, $content: String!) {
+    reactToMessage(id: $id, content: $content) {
+      content
+      message {
+        from
+        to
+        content
+        _id
+      }
+    }
+  }
+`;
+
+export const NEW_REACTION_SUBSCRIPTION = gql`
+  subscription {
+    newReaction {
+      content
+      _id
+      message {
+        from
+        to
+        _id
+      }
+    }
+  }
+`;
