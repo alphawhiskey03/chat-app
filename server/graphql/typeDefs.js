@@ -6,13 +6,22 @@ module.exports = gql`
     getUsers: [User]!
     getMessages(from: String!): [Message]!
   }
+  type Reaction {
+    _id: ID!
+    content: String!
+    message: Message!
+    user: User!
+  }
+
   type Message {
-    id: ID!
+    _id: ID!
     to: String!
     from: String!
     content: String
     createdAt: String!
+    message_reactions:[Reaction]
   }
+ 
   type User {
     id: ID!
     username: String!
@@ -37,11 +46,13 @@ module.exports = gql`
     confirmPassword: String!
   }
   type Mutation {
-    sendMessage(messageInput: MessageInput!): Message!
     RegisterUser(userInput: UserInput!): User!
     login(loginInput: LoginInput!): User!
+    sendMessage(messageInput: MessageInput!): Message!
+    reactToMessage(id: String!, content: String!): Reaction!
   }
   type Subscription {
     messageCreated: Message!
+    newReaction:Reaction!
   }
 `;

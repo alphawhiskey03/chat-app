@@ -12,7 +12,8 @@ const userSchema = Schema({
     unique: true,
   },
   imageUrl:{
-    type:String
+    type:String,
+    default:"user.webp"
   },
   password:{
     type:String,

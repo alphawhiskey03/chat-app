@@ -4,7 +4,10 @@ const { PubSub, withFilter } = require("graphql-subscriptions");
 const {
   UserInputError,
   AuthenticationError,
+  ForbiddenError,
 } = require("apollo-server-express");
+const Reactions = require("../models/reactions");
+const { convertNodeHttpToRequest } = require("apollo-server-core");
 const pubsub = new PubSub();
 module.exports = {
   Query: {
@@ -17,12 +20,36 @@ module.exports = {
         if (!user) throw new UserInputError("you're not authenticated");
         const fromUser = await User.findOne({ username: from });
         if (!fromUser) throw new UserInputError("No user found");
-        const message = await Message.find({
-          $or: [
-            { from: from, to: user.username },
-            { from: user.username, to: from },
-          ],
-        }).sort({ createdAt: -1 });
+        // const message = await Message.find({
+        //   $or: [
+        //     { from: from, to: user.username },
+        //     { from: user.username, to: from },
+        //   ],
+        // }).sort({ createdAt: -1 });
+        const message = await Message.aggregate([
+          { $addFields: { message_id: { $toString: "$_id" } } },
+          {
+            $lookup: {
+              from: "reactions",
+              localField: "message_id",
+              foreignField: "messageId",
+              as: "message_reactions",
+            },
+          },
+          {
+            $match: {
+              $or: [
+                { from: from, to: user.username },
+                { from: user.username, to: from },
+              ],
+            },
+          },
+          {
+            $sort:{
+              createdAt:-1
+            }
+          }
+        ]);
         return message;
       } catch (err) {
         console.log(err);
@@ -61,15 +88,61 @@ module.exports = {
             to,
             from: user.username,
             content,
+            _id:res._id
           },
         });
 
         return {
-          id: res.id,
+          _id: res._id,
           ...res._doc,
         };
       } catch (err) {
         console.log(err);
+        throw err;
+      }
+    },
+    reactToMessage: async (_, { id, content }, { user }) => {
+      const reactions = ["❤️", "😆", "😯", "😢", "😡", "👍", "👎"];
+      try {
+        if (!reactions.includes(content)) {
+          throw new UserInputError("Invalid reaction");
+        }
+        const username = user ? user.username : "";
+        user = await User.findOne({ username });
+        if (!user) {
+          throw new AuthenticationError("Unauthenticated");
+        }
+        const message = await Message.findOne({ _id: id });
+        if (!message) {
+          throw UserInputError("The message doesn't exist");
+        }
+
+        if (message.from !== user.username && message.to !== user.username) {
+          throw new ForbiddenError("You're not allowed to do this");
+        }
+        const reaction = await Reactions.findOneAndUpdate(
+          {
+            messageId: id,
+          },
+          {
+            content,
+            userId: user._id,
+            createdAt: new Date().toISOString(),
+          },
+          { upsert: true,returnDocument:"after" },
+        );
+        console.log(reaction)
+        let res = {
+          _id:reaction._id,
+          content: reaction.content,
+          message: reaction.messageId,
+          user: reaction.userId,
+          createdAt: reaction.createdAt,
+        };
+        console.log(res)
+        pubsub.publish("NEW_REACTION", { newReaction: res });
+        return res;
+      } catch (err) {
         throw err;
       }
     },
@@ -81,14 +154,26 @@ module.exports = {
           if (!user) throw new AuthenticationError("Not authorized");
           return pubsub.asyncIterator("MESSAGE_CREATED");
         },
-        ({messageCreated}, _, { user }) => {
-          console.log("((OSS<SK")
-          console.log(user.username)
-          console.log(messageCreated)
+        ({ messageCreated }, _, { user }) => {
           if (
             messageCreated.to === user.username ||
             messageCreated.from === user.username
           ) {
+            return true;
+          }
+          return false;
+        }
+      ),
+    },
+    newReaction: {
+      subscribe: withFilter(
+        (_, __, { user }) => {
+          if (!user) throw new AuthenticationError("Not authorized");
+          return pubsub.asyncIterator("NEW_REACTION");
+        },
+        async ({ newReaction }, _, { user }) => {
+          const message = await Message.findOne({ _id: newReaction.message });
+          if (message.to === user.username || message.from === user.username) {
             return true;
           }
           return false;

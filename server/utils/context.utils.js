@@ -16,8 +16,8 @@ const subscriptionAuth=(connectionParams)=>{
   let token
   try{
 
-  if(connectionParams && connectionParams.Authorization){
-   token=connectionParams.Authorization.split("Bearer ")[1]
+  if(connectionParams && connectionParams.authToken){
+   token=connectionParams.authToken.split("Bearer ")[1]
    let decodedTok
    if(token){
     jwt.verify(token,JWT_SECRET_KEY,(err,decodedToken)=>{
