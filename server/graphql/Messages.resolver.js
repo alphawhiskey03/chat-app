@@ -88,7 +88,8 @@ module.exports = {
             to,
             from: user.username,
             content,
-            _id:res._id
+            _id:res._id,
+            createdAt:res.createdAt
           },
         });
 
