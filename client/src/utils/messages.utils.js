@@ -25,7 +25,6 @@ const MessagReducer = (state, action) => {
     case "SET_USER_MESSAGE":
       usersCopy = state.users;
        userIndex = usersCopy.findIndex((u) => u.username === username);
-       console.log(usersCopy[userIndex])
       usersCopy[userIndex] = { ...usersCopy[userIndex], messages };
       return {
         ...state, 
@@ -51,14 +50,10 @@ const MessagReducer = (state, action) => {
     case "ADD_REACTION":
       usersCopy = state.users;
       userIndex = usersCopy.findIndex((u) => u.username === username);
-      console.log(username);
-      console.log(userIndex)
+
       temp={...usersCopy[userIndex]}
-      console.log(temp)
       const messageIndex=temp.messages?.findIndex(m=>m._id===reaction.message._id)
-      console.log(messageIndex)
       if(messageIndex > -1){
-      console.log(usersCopy)
         let messageCopy=[...temp.messages]
         let reactionsCopy=[...messageCopy[messageIndex].message_reactions]
       
@@ -67,9 +62,7 @@ const MessagReducer = (state, action) => {
         if(reactionIndex > -1){
           reactionsCopy[reactionIndex]=reaction
         }else{
-          console.log("new reaction")
           let message_reactions=reaction
-          console.log(message_reactions)
           reactionsCopy=[...reactionsCopy,message_reactions]
         }
 

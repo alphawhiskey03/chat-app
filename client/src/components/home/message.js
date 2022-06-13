@@ -79,7 +79,7 @@ const Message = ({ message }) => {
           })}
         >
           {message.message_reactions.length> 0 && (
-            <div className="reactions-div bg-secondary p-1 rounded-pill">
+            <div className="selected-user reactions-div bg-secondary p-1 rounded-pill">
               {message.message_reactions[0].content}
             </div>
           )}

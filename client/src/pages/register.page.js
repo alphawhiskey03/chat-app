@@ -42,10 +42,10 @@ const Register = () => {
     register();
   }
   return (
-    <>
-      <Card className="p-3 mt-4">
+    <div className="d-flex justify-content-center align-items-center">
+      <Card className="p-3 mt-4 bg-dark auth-card" style={{width:400}}>
         <Form className="mt-3" onSubmit={onSubmit}>
-          <h1>Register</h1>
+          <h1 className="text-white">Register</h1>
 
           <Group controlId="formUsername">
             <Label>Username</Label>
@@ -55,6 +55,8 @@ const Register = () => {
               placeholder="Enter your username"
               value={values.username}
               onChange={onChange}
+              className="bg-dark"
+
             />
             <Text
               className={
@@ -75,6 +77,8 @@ const Register = () => {
               placeholder="Enter your mail"
               value={values.email}
               onChange={onChange}
+              className="bg-dark"
+
             />
             <Text
               className={errors && errors.email ? "text-danger" : "text-primary"}
@@ -93,6 +97,8 @@ const Register = () => {
               placeholder="Password"
               value={values.password}
               onChange={onChange}
+              className="bg-dark"
+
             />
             <Text
               className={
@@ -113,6 +119,8 @@ const Register = () => {
               placeholder="Re-enter password"
               value={values.confimPassword}
               onChange={onChange}
+              className="bg-dark"
+
             />
             <Text
               className={
@@ -125,7 +133,7 @@ const Register = () => {
                 : "Should match with password"}
             </Text>
           </Group>
-          <Button variant="success" size="sm" className="mt-3" type="submit">
+          <Button variant="primary text-dark" size="sm" className="mt-3" type="submit">
             {loading ? "loading..." : "Register"}
           </Button>
         </Form>
@@ -142,7 +150,7 @@ const Register = () => {
           </Button>
         </div>
       </Card>
-    </>
+      </div>
   );
 };
 

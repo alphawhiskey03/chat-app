@@ -95,7 +95,6 @@ useEffect(()=>{
           </Link> */}
           <DropdownButton className={"px-3"}title={user.username}>
           <Dropdown.Item  eventKey="1" onClick={logout}>Logout</Dropdown.Item>
-          {/* {user.username} */}
           </DropdownButton>
         </Col>
 
@@ -105,7 +104,7 @@ useEffect(()=>{
           </Button>
         </Col> */}
       </Row>
-      <Row className="bg-white">
+      <Row className="bg-dark pr-3 pt-2">
           <Users />
           <Messages />
       </Row>

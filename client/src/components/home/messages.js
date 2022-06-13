@@ -25,7 +25,6 @@ const Messages = () => {
 
   const [sendMessage] = useMutation(SEND_MESSAGE_MUTATION, {
     onCompleted(data){
-      console.log(data)
       clearValues();
     },
     onError(err) {
@@ -41,7 +40,6 @@ const Messages = () => {
   }, [selectedUser]);
   useEffect(() => {
     if (messageData) {
-      console.log("new new message")
       dispatch({
         type: "SET_USER_MESSAGE",
         payload: {
@@ -57,9 +55,9 @@ const Messages = () => {
 
   let messageMarkup;
   if (!message && !messegesLoading) {
-    messageMarkup = <p className="info-text">Select a friend!</p>;
+    messageMarkup = <p className="text-primary text-center">Select a friend!</p>;
   } else if (messegesLoading) {
-    messageMarkup = <p className="info-text">Loading...</p>;
+    messageMarkup = <p className="text-primary text-center">Loading...</p>;
   } else if (message.length > 0) {
     messageMarkup = "";
     messageMarkup = message.map((message, i) => {
@@ -67,7 +65,7 @@ const Messages = () => {
     });
   } else if (message.length === 0) {
     messageMarkup = (
-      <p className="info-text">You're now connected send your first message</p>
+      <p className="text-primary text-center">You're now connected send your first message</p>
     );
   }
 
@@ -97,7 +95,7 @@ const Messages = () => {
           <Form.Group className="d-flex align-items-center">
             <Form.Control
               type="text"
-              className="rounded-pill bg-secondary message-input"
+              className="rounded-pill bg-dark message-input"
               placeholder={`say hi to ${
                 selectedUser ? selectedUser.username : "a friend"
               }`}
@@ -106,7 +104,7 @@ const Messages = () => {
               onChange={onChange}
             />
             <span className="px-1" role="button" onClick={onSubmit}>
-              <BiSend size="2rem" style={{ color: "#0d6efd" }} />
+              <BiSend size="2rem" style={{ color: "#5936c4" }} />
             </span>
           </Form.Group>
         </Form>

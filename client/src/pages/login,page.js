@@ -36,9 +36,9 @@ const Login = () => {
   }
   return (
     <div className="d-flex justify-content-center align-items-center my-5">
-      <Card className="p-3 mt-4" style={{width:400}}>
+      <Card className="p-3 mt-4 bg-dark auth-card" style={{width:400}}>
         <Form className="mt-3" onSubmit={onSubmit}>
-          <h1>Login</h1>
+          <h1 className="text-light">Login</h1>
 
           <Group controlId="formUsername">
             <Label>Username</Label>
@@ -48,6 +48,7 @@ const Login = () => {
               placeholder="Enter your username"
               values={values.username}
               onChange={onChange}
+              className="bg-dark"
             />
             {errors && errors.username ? (
               <Text className="text-danger">{errors.username}</Text>
@@ -63,6 +64,7 @@ const Login = () => {
               name="password"
               placeholder="Password"
               values={values.password}
+              className="bg-dark"
               onChange={onChange}
             />
             {errors && errors.password ? (
@@ -71,7 +73,7 @@ const Login = () => {
               ""
             )}
           </Group>
-          <Button variant="success" size="sm" className="mt-3" type="submit">
+          <Button variant="primary text-dark" size="sm" className="mt-3" type="submit">
             {loading ? "Loading..." : "Login"}
           </Button>
         </Form>

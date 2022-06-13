@@ -1,14 +1,17 @@
 $gray-600: rgba(245, 245, 245);
-
+$primary:#5936c4;
 @import "~bootstrap/scss/bootstrap";
 
 
 body{
-  background: black;
+  background:#212529;
 }
-input::placeholder{
-  color:rgba(0,0,0,50%) !important
 
+input::placeholder{
+  color:white !important
+}
+input{
+  color:white !important
 }
 .main-cont {
   display: flex;
@@ -83,13 +86,22 @@ input::placeholder{
 .user-search{
   &:focus{
     box-shadow: none;
-    border:1px solid #198754 ;
-    outline:#198754
+    border:1px solid #5f43b2 ;
+    outline:#5f43b2
   };
   
 }
 .user-search::placeholder{
   color:rgba(0,0,0,50%)
+}
+
+.auth-card{
+  border: 1px solid #5f43b2;
+
+}
+
+.selected-user{
+  background-color: #968eaf !important;
 }
 @media only screen and (max-width:912px){
   .user-content{
