@@ -6,7 +6,6 @@ const CheckRoute = (props) => {
         return <Navigate to="/login"/>
     }
     if(user && props.guest){
-        console.log(user)
         return <Navigate to="/"/>
     } 
     return props.children
