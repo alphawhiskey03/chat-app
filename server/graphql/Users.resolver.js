@@ -10,36 +10,12 @@ const {
 } = require("apollo-server-express");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET_KEY } = require("../config");
+const {
+  generateToken,
+  unreadCounter,
+  findLatestMessage,
+} = require("../utils/user.utils");
 
-const generateToken = async (username, email, id) => {
-  const token = jwt.sign(
-    {
-      email,
-      username,
-      id,
-    },
-    JWT_SECRET_KEY,
-    {
-      expiresIn: "1h",
-    }
-  );
-  return token;
-};
-
-const findLatestMessage=async (latestMessage,user)=>{
-  let userMessages=latestMessage.map(lM=>{
-    if(lM.to===user || lM.from===user){
-      return lM
-    }
-  }).filter(val=>typeof val!=='undefined')
-let newest=userMessages[0];
-for(let i=0;i<userMessages.length;i++){
-  if(new Date(userMessages[i].createdAt)>new Date(newest.createdAt)){
-    newest=userMessages[i]
-  }
-}
-return newest
-}
 module.exports = {
   Query: {
     getUsers: async (_, __, { user }) => {
@@ -81,27 +57,18 @@ module.exports = {
             },
           },
         ]);
-        users = users.map((newus,i) => {
-          newus.latestMessage.sort((a,b)=>{
-            return new Date(a.createdAt)- new Date(b.createdAt)
-          })
-          // if(i==0){
+        users = users.map((newus, i) => {
+          newus.latestMessage.sort((a, b) => {
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          });
+          const temp = findLatestMessage(newus.latestMessage, user.username);
+          const unread = unreadCounter(newus.latestMessage, user.username);
 
-          // findLatestMessage(newus.latestMessage,user.username)
-          // }
-          const temp=findLatestMessage(newus.latestMessage,user.username)
-          // const temp = newus.latestMessage[newus.latestMessage.length - 1];
-       
-          // if (
-          //   temp &&
-          //   (temp.from === user.username || temp.to === user.username)
-          // ) {
-            latestMessage = temp;
-            newus.latestMessage = latestMessage;
-          // } else delete newus.latestMessage;
+          latestMessage = temp;
+          newus.latestMessage = latestMessage;
+          newus.unreadCount = unread;
           return newus;
         });
-        // console.log(users)
         return users;
       } catch (err) {
         throw new Error(err);
