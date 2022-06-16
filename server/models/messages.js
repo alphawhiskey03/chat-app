@@ -13,6 +13,10 @@ const MessageSchema = new Schema({
     type:String,
     required:true
   },
+  read:{
+    type:Boolean,
+    default:false
+  },
   createdAt:{
     type:String,
     required:true
