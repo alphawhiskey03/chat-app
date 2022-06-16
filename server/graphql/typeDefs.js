@@ -18,8 +18,9 @@ module.exports = gql`
     to: String!
     from: String!
     content: String
+    read:Boolean
     createdAt: String!
-    message_reactions:[Reaction]
+    message_reactions:[Reaction]!
   }
  
   type User {
@@ -29,6 +30,7 @@ module.exports = gql`
     imageUrl: String
     token: String!
     latestMessage: Message
+    unreadCount:Int
   }
 
   input LoginInput {
@@ -50,6 +52,7 @@ module.exports = gql`
     login(loginInput: LoginInput!): User!
     sendMessage(messageInput: MessageInput!): Message!
     reactToMessage(id: String!, content: String!): Reaction!
+    setAsRead(id:String!):Message!
   }
   type Subscription {
     messageCreated: Message!
