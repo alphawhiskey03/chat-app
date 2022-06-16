@@ -7,7 +7,6 @@ const {
   ForbiddenError,
 } = require("apollo-server-express");
 const Reactions = require("../models/reactions");
-const { convertNodeHttpToRequest } = require("apollo-server-core");
 const pubsub = new PubSub();
 module.exports = {
   Query: {
@@ -45,10 +44,10 @@ module.exports = {
             },
           },
           {
-            $sort:{
-              createdAt:-1
-            }
-          }
+            $sort: {
+              createdAt: -1,
+            },
+          },
         ]);
         return message;
       } catch (err) {
@@ -88,8 +87,9 @@ module.exports = {
             to,
             from: user.username,
             content,
-            _id:res._id,
-            createdAt:res.createdAt
+            read: res.read,
+            _id: res._id,
+            createdAt: res.createdAt,
           },
         });
 
@@ -130,22 +130,27 @@ module.exports = {
             userId: user._id,
             createdAt: new Date().toISOString(),
           },
-          { upsert: true,returnDocument:"after" },
+          { upsert: true, returnDocument: "after" }
         );
-        console.log(reaction)
         let res = {
-          _id:reaction._id,
+          _id: reaction._id,
           content: reaction.content,
           message: reaction.messageId,
           user: reaction.userId,
           createdAt: reaction.createdAt,
         };
-        console.log(res)
         pubsub.publish("NEW_REACTION", { newReaction: res });
         return res;
       } catch (err) {
         throw err;
       }
+    },
+    setAsRead: async (_, { id }, { user }) => {
+      const res = await Message.findOneAndUpdate(
+        { _id: id },
+        { read: true, returnDocument: "after" }
+      );
+      return res;
     },
   },
   Subscription: {
