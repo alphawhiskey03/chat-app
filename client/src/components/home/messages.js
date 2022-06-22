@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import { GET_MESSAGES_QUERY, SEND_MESSAGE_MUTATION } from "../../gql/queries";
 import {
@@ -6,18 +6,21 @@ import {
   useMessageDispatch,
 } from "../../utils/messages.utils";
 import Message from "./message";
-import { Col, Form } from "react-bootstrap";
+import {  Form } from "react-bootstrap";
 import FormUtil from "../../utils/form.utils";
 import { BiSend } from "react-icons/bi";
+import ToastMessage from "../general/toastMessage";
 const Messages = () => {
   const { onSubmit, onChange, values, clearValues } = FormUtil(onSend, {
     message: "",
   });
   const { users } = useMessageState();
   const dispatch = useMessageDispatch();
-  const messageEndRef = useRef(null);
   const selectedUser = users?.find((user) => user.selected === true);
   const message = selectedUser?.messages;
+const [reactionOpen,setReactionOpen]=useState('')
+const [showError,setShowError]=useState(false);
+
 
 
   const [getMessages, { loading: messegesLoading, data: messageData }] =
@@ -61,17 +64,16 @@ const Messages = () => {
   } else if (message.length > 0) {
     messageMarkup = "";
     messageMarkup = message.map((message, i) => {
-      return <Message key={message._id} message={message} />;
+      return <Message key={message._id} message={message} reactionOpen={reactionOpen} setReactionOpen={setReactionOpen} />;
     });
   } else if (message.length === 0) {
     messageMarkup = (
-      <p className="text-primary text-center">You're now connected send your first message</p>
+      <p className="text-light text-center">You're now connected send your first message</p>
     );
   }
 
   function onSend() {
     if (!selectedUser) return;
-
     sendMessage({
       variables: {
         messageInput: {
@@ -81,13 +83,27 @@ const Messages = () => {
       },
     });
   }
+  const handleMessageAreaClick=()=>{
+    if(reactionOpen.length>0){
+      setReactionOpen('');
+    }
+  }
+  const onMessageChange=(e)=>{
+    if(e.target.value.length<250){
+      onChange(e)
+    }else{
+      setShowError(true)
+    }
+  }
+
 
   return (
-    <Col xs={10} md={8}>
+    <>
+    <ToastMessage show={showError} onClose={setShowError}  messageHeader={"Oopsie"} messageBody={"The message is too long"}/>
       <div
         className={"d-flex flex-column-reverse message-box px-2 pb-3"}
-        ref={messageEndRef}
-      >
+      onClick={handleMessageAreaClick}
+     >
         {messageMarkup}
       </div>
       <div>
@@ -101,7 +117,7 @@ const Messages = () => {
               }`}
               name="message"
               value={values.message}
-              onChange={onChange}
+              onChange={onMessageChange}
             />
             <span className="px-1" role="button" onClick={onSubmit}>
               <BiSend size="2rem" style={{ color: "#5936c4" }} />
@@ -110,7 +126,7 @@ const Messages = () => {
         </Form>
         <p className={"p-2"}  style={{textAlign:"center",color: "#adb5bd" }}>Copyrights 2022</p>
       </div>
-    </Col>
+    </>
   );
 };
 
