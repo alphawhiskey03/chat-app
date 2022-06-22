@@ -9,7 +9,7 @@ import { useAuthDispatch } from "../utils/auth.util";
 const Register = () => {
   const { Group, Label, Control, Text } = Form;
   const [errors, setErrors] = useState({});
-  const dispatch=useAuthDispatch()
+  const dispatch = useAuthDispatch();
   const { onSubmit, onChange, values, clearValues } = FormUtil(formOnSubmit, {
     username: "",
     email: "",
@@ -20,9 +20,9 @@ const Register = () => {
   const [register, { loading }] = useMutation(REGISTER_USER_MUTATION, {
     update(_, { data: { RegisterUser: userData } }) {
       dispatch({
-        type:"LOGIN",
-        payload:userData
-      })
+        type: "LOGIN",
+        payload: userData,
+      });
       navigate("/");
     },
     onError(err) {
@@ -43,7 +43,7 @@ const Register = () => {
   }
   return (
     <div className="d-flex justify-content-center align-items-center">
-      <Card className="p-3 mt-4 bg-dark auth-card" style={{width:400}}>
+      <Card className="p-3 mt-4 bg-dark auth-card" style={{ width: 400 }}>
         <Form className="mt-3" onSubmit={onSubmit}>
           <h1 className="text-white">Register</h1>
 
@@ -56,7 +56,6 @@ const Register = () => {
               value={values.username}
               onChange={onChange}
               className="bg-dark"
-
             />
             <Text
               className={
@@ -78,14 +77,13 @@ const Register = () => {
               value={values.email}
               onChange={onChange}
               className="bg-dark"
-
             />
             <Text
-              className={errors && errors.email ? "text-danger" : "text-primary"}
+              className={
+                errors && errors.email ? "text-danger" : "text-primary"
+              }
             >
-              {errors && errors.email
-                ? errors.email
-                : "Never share email with anyone"}
+              {errors && errors.email ? errors.email : "email must be unique"}
             </Text>
           </Group>
 
@@ -98,7 +96,6 @@ const Register = () => {
               value={values.password}
               onChange={onChange}
               className="bg-dark"
-
             />
             <Text
               className={
@@ -107,7 +104,7 @@ const Register = () => {
             >
               {errors && errors.password
                 ? errors.password
-                : "Must contain alphanumeric"}{" "}
+                : "Must be alphanumeric"}{" "}
             </Text>
           </Group>
 
@@ -120,11 +117,12 @@ const Register = () => {
               value={values.confimPassword}
               onChange={onChange}
               className="bg-dark"
-
             />
             <Text
               className={
-                errors && errors.confirmPassword ? "text-danger" : "text-primary"
+                errors && errors.confirmPassword
+                  ? "text-danger"
+                  : "text-primary"
               }
             >
               {" "}
@@ -133,7 +131,12 @@ const Register = () => {
                 : "Should match with password"}
             </Text>
           </Group>
-          <Button variant="primary text-dark" size="sm" className="mt-3" type="submit">
+          <Button
+            variant="primary text-dark"
+            size="sm"
+            className="mt-3"
+            type="submit"
+          >
             {loading ? "loading..." : "Register"}
           </Button>
         </Form>
@@ -150,7 +153,7 @@ const Register = () => {
           </Button>
         </div>
       </Card>
-      </div>
+    </div>
   );
 };
 
