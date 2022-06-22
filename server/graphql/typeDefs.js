@@ -57,5 +57,6 @@ module.exports = gql`
   type Subscription {
     messageCreated: Message!
     newReaction:Reaction!
+    userCreated:User!
   }
 `;
