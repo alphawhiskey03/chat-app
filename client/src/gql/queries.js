@@ -1,7 +1,5 @@
 import { gql } from "@apollo/client";
 
-
-
 // QUERY
 
 export const GET_USERS_QUERY = gql`
@@ -16,6 +14,7 @@ export const GET_USERS_QUERY = gql`
         content
         createdAt
       }
+      unreadCount
     }
   }
 `;
@@ -26,6 +25,7 @@ export const GET_MESSAGES_QUERY = gql`
       _id
       from
       to
+      read
       content
       createdAt
       message_reactions {
@@ -35,8 +35,6 @@ export const GET_MESSAGES_QUERY = gql`
     }
   }
 `;
-
-
 
 // MUTATIONS
 
@@ -64,14 +62,13 @@ export const SEND_MESSAGE_MUTATION = gql`
     sendMessage(messageInput: $messageInput) {
       to
       from
+      read
       content
       _id
       createdAt
     }
   }
 `;
-
-
 
 export const REACT_TO_MESSAGE = gql`
   mutation ($id: String!, $content: String!) {
@@ -87,7 +84,16 @@ export const REACT_TO_MESSAGE = gql`
   }
 `;
 
-
+export const SET_AS_READ_MUTATION = gql`
+  mutation ($setAsReadId: String!) {
+    setAsRead(id: $setAsReadId) {
+      _id
+      read
+      from 
+      to
+    }
+  }
+`;
 
 // Subscriptions
 
@@ -96,6 +102,7 @@ export const MESSAGE_CREATED_SUBSCRIPTION = gql`
     messageCreated {
       content
       to
+      read
       from
       _id
       createdAt
@@ -116,3 +123,17 @@ export const NEW_REACTION_SUBSCRIPTION = gql`
     }
   }
 `;
+
+export const USER_CREATED_SUBSCRIPTION=gql`
+subscription{
+  userCreated{
+    id
+    username
+    imageUrl
+    latestMessage{
+      _id
+    }
+    unreadCount
+  }
+}
+`
