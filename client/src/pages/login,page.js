@@ -10,7 +10,6 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const dispatch = useAuthDispatch();
-  console.log(dispatch);
   const { onSubmit, onChange, values, clearValues } = FormUtil(formOnSubmit, {
     username: "",
     password: "",
@@ -21,10 +20,9 @@ const Login = () => {
         type: "LOGIN",
         payload: userData,
       });
-      window.location.href="/"
+      window.location.href = "/";
     },
     onError(err) {
-      console.log(err.graphQLErrors[0]);
       setErrors(err.graphQLErrors[0].extensions.errors);
     },
     variables: {
@@ -36,7 +34,7 @@ const Login = () => {
   }
   return (
     <div className="d-flex justify-content-center align-items-center my-5">
-      <Card className="p-3 mt-4 bg-dark auth-card" style={{width:400}}>
+      <Card className="p-3 mt-4 bg-dark auth-card" style={{ width: 400 }}>
         <Form className="mt-3" onSubmit={onSubmit}>
           <h1 className="text-light">Login</h1>
 
@@ -73,7 +71,12 @@ const Login = () => {
               ""
             )}
           </Group>
-          <Button variant="primary text-dark" size="sm" className="mt-3" type="submit">
+          <Button
+            variant="primary text-dark"
+            size="sm"
+            className="mt-3"
+            type="submit"
+          >
             {loading ? "Loading..." : "Login"}
           </Button>
         </Form>
@@ -90,7 +93,7 @@ const Login = () => {
           </Button>
         </div>
       </Card>
-      </div>
+    </div>
   );
 };
 
