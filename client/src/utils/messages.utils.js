@@ -8,8 +8,9 @@ const MessagesStateContext = createContext();
 const MessagesDispatchContext = createContext();
 
 const MessagReducer = (state, action) => {
-  let usersCopy,userIndex,temp;
-  const { username,message, messages,reaction } = action.payload;
+  var usersCopy, userIndex, messageIndex, temp;
+  const { username, message, messages, reaction, messageId, newUser } =
+    action.payload;
   switch (action.type) {
     case "SET_USERS":
       return { ...state, users: action.payload };
@@ -24,68 +25,109 @@ const MessagReducer = (state, action) => {
       };
     case "SET_USER_MESSAGE":
       usersCopy = state.users;
-       userIndex = usersCopy.findIndex((u) => u.username === username);
+      userIndex = usersCopy.findIndex((u) => u.username === username);
       usersCopy[userIndex] = { ...usersCopy[userIndex], messages };
       return {
-        ...state, 
+        ...state,
         users: usersCopy,
       };
-    case "ADD_MESSAGE":
-      usersCopy = state.users;
-       userIndex = usersCopy.findIndex((u) => u.username === username);
-        temp={
-         ...usersCopy[userIndex],
-         messages:[
-          {...message,message_reactions:[]},
-          ...usersCopy[userIndex].messages,
-         ],
-         latestMessage:message,
-       }
-       usersCopy[userIndex]=temp;
+    case "ADD_USER":
+      usersCopy = [...state.users];
+      usersCopy = [...usersCopy, { ...newUser, message_reactions: [] }];
+      return {
+        ...state,
+        users: usersCopy,
+      };
 
-       return {
-         ...state,
-         users:usersCopy
-       }
+    case "ADD_MESSAGE":
+      usersCopy = [...state.users];
+      userIndex = usersCopy.findIndex((u) => u.username === username);
+      temp = {
+        ...usersCopy[userIndex],
+        messages: usersCopy[userIndex].messages
+          ? [
+              { ...message, message_reactions: [] },
+              ...usersCopy[userIndex].messages,
+            ]
+          : null,
+        latestMessage: message,
+        unreadCount:
+          message.from === username
+            ? usersCopy[userIndex].unreadCount + 1
+            : usersCopy[userIndex].unreadCount,
+      };
+
+      usersCopy[userIndex] = temp;
+
+      return {
+        ...state,
+        users: usersCopy,
+      };
     case "ADD_REACTION":
       usersCopy = state.users;
       userIndex = usersCopy.findIndex((u) => u.username === username);
 
-      temp={...usersCopy[userIndex]}
-      const messageIndex=temp.messages?.findIndex(m=>m._id===reaction.message._id)
-      if(messageIndex > -1){
-        let messageCopy=[...temp.messages]
-        let reactionsCopy=[...messageCopy[messageIndex].message_reactions]
-      
-        const reactionIndex=reactionsCopy.findIndex(r=>r._id===reaction._id)
+      temp = { ...usersCopy[userIndex] };
+      messageIndex = temp.messages?.findIndex(
+        (m) => m._id === reaction.message._id
+      );
+      if (messageIndex > -1) {
+        let messageCopy = [...temp.messages];
+        let reactionsCopy = [...messageCopy[messageIndex].message_reactions];
 
-        if(reactionIndex > -1){
-          reactionsCopy[reactionIndex]=reaction
-        }else{
-          let message_reactions=reaction
-          reactionsCopy=[...reactionsCopy,message_reactions]
+        const reactionIndex = reactionsCopy.findIndex(
+          (r) => r._id === reaction._id
+        );
+
+        if (reactionIndex > -1) {
+          reactionsCopy[reactionIndex] = reaction;
+        } else {
+          let message_reactions = reaction;
+          reactionsCopy = [...reactionsCopy, message_reactions];
         }
 
-        messageCopy[messageIndex]={
+        messageCopy[messageIndex] = {
           ...messageCopy[messageIndex],
-          message_reactions:reactionsCopy
-        }
+          message_reactions: reactionsCopy,
+        };
 
-        temp={...temp,messages:messageCopy}
-        usersCopy[userIndex]=temp
+        temp = { ...temp, messages: messageCopy };
+        usersCopy[userIndex] = temp;
       }
 
       return {
         ...state,
-        
+        users: usersCopy,
+      };
+    case "SET_AS_READ":
+      usersCopy = [...state.users];
+
+      userIndex = usersCopy.findIndex((usr) => usr.username === username);
+      temp = { ...usersCopy[userIndex] };
+      messageIndex = temp.messages?.findIndex((msg) => msg._id === messageId);
+      if (messageIndex > -1) {
+        let messagesCopy = [...temp.messages];
+        messagesCopy[messageIndex] = {
+          ...messagesCopy[messageIndex],
+          read: true,
+        };
+        temp = {
+          ...usersCopy[userIndex],
+          messages: messagesCopy,
+          unreadCount: 0,
+        };
+        usersCopy[userIndex] = temp;
       }
-      case "LOGOUT":
-        return {
-          ...state,
-          users:null
-        }
+      return {
+        ...state,
+        users: usersCopy,
+      };
 
-
+    case "LOGOUT":
+      return {
+        ...state,
+        users: null,
+      };
 
     default:
       throw new Error(`Unknown action type ${action.type}`);
@@ -95,12 +137,11 @@ const MessagReducer = (state, action) => {
 export const MessageProvider = ({ children }) => {
   const [state, dispatch] = useReducer(MessagReducer, initialState);
   return (
-      <MessagesDispatchContext.Provider value={dispatch}>
-            <MessagesStateContext.Provider value={state}>
-
+    <MessagesDispatchContext.Provider value={dispatch}>
+      <MessagesStateContext.Provider value={state}>
         {children}
-        </MessagesStateContext.Provider>
-      </MessagesDispatchContext.Provider>
+      </MessagesStateContext.Provider>
+    </MessagesDispatchContext.Provider>
   );
 };
 
