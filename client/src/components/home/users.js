@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Col,
-  Image,
-  InputGroup,
-  FormControl,
-  Badge,
-  Button,
-} from "react-bootstrap";
-import {useMediaQuery} from "react-responsive"
+import { Image, InputGroup, FormControl, Badge, Button } from "react-bootstrap";
+import { useMediaQuery } from "react-responsive";
 import { useQuery } from "@apollo/client";
 import classnames from "classnames";
 import { GET_USERS_QUERY } from "../../gql/queries";
@@ -21,8 +14,7 @@ import {
   lastMessageTime,
   shortenMessage,
 } from "../../utils/helper.utils";
-import {TbArrowBarToRight,TbArrowBarToLeft} from "react-icons/tb"
-import { CgCloseO } from "react-icons/cg";
+import { TbArrowBarToRight, TbArrowBarToLeft } from "react-icons/tb";
 import classNames from "classnames";
 const Users = ({ expandMenu, toggleMenu }) => {
   const dispatch = useMessageDispatch();
@@ -30,14 +22,12 @@ const Users = ({ expandMenu, toggleMenu }) => {
   const selectedUser = users?.find((user) => user.selected === true)?.username;
   const [userList, setUserList] = useState(users ? [...users] : []);
   const [searchTxt, setSearchTxt] = useState("");
-  const mobileDevice=useMediaQuery({query:'(max-width:912px)'})
-  console.log(expandMenu)
+  const mobileDevice = useMediaQuery({ query: "(max-width:912px)" });
 
   useEffect(() => {
     if (users) {
       setUserList(() => [...sortUsers(users)]);
     }
-    // setUserList(users);
   }, [JSON.stringify(users)]);
 
   useEffect(() => {
@@ -68,6 +58,7 @@ const Users = ({ expandMenu, toggleMenu }) => {
   } else if (userList.length > 0) {
     userMarkup = userList.map((mp) => {
       const selected = selectedUser === mp.username;
+      const notRead = mp.unreadCount > 0;
       return (
         <div
           role="button"
@@ -88,13 +79,26 @@ const Users = ({ expandMenu, toggleMenu }) => {
           }}
         >
           <Image src={mp.imageUrl} className="user-image m-2" roundedCircle />
-          <div className={classNames("",{"user-content":!expandMenu})}>
+          <div className={classNames("", { "user-content": !expandMenu })}>
             <p className="text-primary">{mp.username}</p>
-            <p className="font-weight-light text-light">
-              {mp.latestMessage
-                ? shortenMessage(mp.latestMessage)
-                : "You are now connected"}
-            </p>
+            <div className={"user-info"}>
+              <div className={"latest-message-container"}>
+                <p
+                  className={classNames("font-weight-light text-light", {
+                    "unread-message": notRead,
+                  })}
+                >
+                  {mp.latestMessage ? (
+                    <>{shortenMessage(mp.latestMessage)} </>
+                  ) : (
+                    "You are now connected"
+                  )}
+                </p>
+              </div>
+              <div style={{ flexGrow: 2 }}>
+                {mp.unreadCount > 0 && <Badge>{mp.unreadCount}</Badge>}
+              </div>
+            </div>
             <p className="text-light" style={{ fontSize: 10 }}>
               {lastMessageTime(mp.latestMessage)}
             </p>
@@ -108,30 +112,33 @@ const Users = ({ expandMenu, toggleMenu }) => {
     <>
       <div className={"toggle-btn"}>
         <Button onClick={toggleMenu}>
-          {expandMenu ?  <TbArrowBarToLeft/>:<TbArrowBarToRight/>}
+          {expandMenu ? <TbArrowBarToLeft /> : <TbArrowBarToRight />}
         </Button>
       </div>
-      {mobileDevice ? ( <>{ expandMenu && (
-        <InputGroup className="mb-3">
-          <FormControl
-            placeholder="Search..."
-            onChange={(e) => setSearchTxt(e.target.value)}
-            className="user-search bg-dark"
-          />
-        </InputGroup>
-      )}</> ):(<>
-        <InputGroup className="mb-3">
-          <FormControl
-            placeholder="Search..."
-            onChange={(e) => setSearchTxt(e.target.value)}
-            className="user-search bg-dark"
-          />
-        </InputGroup></>)}
-      <div
-        style={{ overflowY: "scroll", height: 600, transition: "0.5s fade-in" }}
-      >
-        {userMarkup}
-      </div>
+      {mobileDevice ? (
+        <>
+          {expandMenu && (
+            <InputGroup className="mb-3">
+              <FormControl
+                placeholder="Search..."
+                onChange={(e) => setSearchTxt(e.target.value)}
+                className="user-search bg-dark"
+              />
+            </InputGroup>
+          )}
+        </>
+      ) : (
+        <>
+          <InputGroup className="mb-3">
+            <FormControl
+              placeholder="Search..."
+              onChange={(e) => setSearchTxt(e.target.value)}
+              className="user-search bg-dark"
+            />
+          </InputGroup>
+        </>
+      )}
+      <div className={"user-box"}>{userMarkup}</div>
     </>
   );
 };
