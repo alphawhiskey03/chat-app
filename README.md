@@ -1,10 +1,10 @@
-### chat-app
+## chat-app
 
 <div>
 <a href="#overview">Overview</a> | <a href="#tech_stack">Tech stack</a> | <a href="#preview">Preview</a>
 </div>
 
-### OVERVIEW
+## OVERVIEW
 
 <div id="overview"></div>
 The #3 project in my GraphQL roadmap, A chat app built from scratch with React,Node,MongoDB and Graphql.
@@ -25,18 +25,18 @@ node
 
 ```
 
-### PREVIEW
+## PREVIEW
 
 <div id="preview"></div>
 
-## SIGNUP SCREEN
+### SIGNUP SCREEN
 
 <img src="./preview/signup.png">
 
-## LOGIN SCREEN
+### LOGIN SCREEN
 
 <img src="./preview/login.png">
 
-## CHAT SCREEN
+### CHAT SCREEN
 
 <img src="./preview/chat.png">
