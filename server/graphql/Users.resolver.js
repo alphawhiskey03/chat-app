@@ -15,6 +15,9 @@ const {
   unreadCounter,
   findLatestMessage,
 } = require("../utils/user.utils");
+const {PubSub} =require("graphql-subscriptions")
+
+const pubsub=new PubSub();
 
 module.exports = {
   Query: {
@@ -114,6 +117,17 @@ module.exports = {
       });
       const res = await newUser.save();
       const token = generateToken(res.username, res.email, res._id);
+      pubsub.publish("USER_CREATED",{
+        userCreated:{
+          id:res._id,
+          username:res.username,
+          imageUrl:res.imageUrl,
+          latestMessage:null,
+          unreadCounter:0,
+          email:res.email,
+          token:token
+        }
+      })
 
       return {
         id: res.id,
@@ -137,7 +151,7 @@ module.exports = {
         errors.password = "the password is incorrect";
         throw new AuthenticationError("password is incorrect", { errors });
       }
-      const token = generateToken(user.username, user.email, user.id);
+      const token = generateToken(user.username, user.email, user.id);  
       return {
         id: user.id,
         username: user.username,
@@ -146,4 +160,9 @@ module.exports = {
       };
     },
   },
+  Subscription:{
+    userCreated:{
+      subscribe:()=>pubsub.asyncIterator("USER_CREATED")
+    }
+  }
 };
