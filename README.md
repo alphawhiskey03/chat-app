@@ -7,8 +7,7 @@
 ## OVERVIEW
 
 <div id="overview"></div>
-The #3 project in my GraphQL roadmap, A chat app built from scratch with React,Node,MongoDB and Graphql.
-I built this project to get a clear understanding of how subscriptions work in Graphql.
+The #3 project in my GraphQL roadmap,Ever since I started development, I’ve always wanted to create a chat application. So, while learning GraphQL it was a good idea to build a chat app to get a good grip on GraphQL subscriptions as the chat app involves real time data transfer.The app allows user to react to messages. I’ve built this app from scratch with React, Bootstrap, Node, Apollo, MongoDB and GraphQL.
 
 ### TECH STACK
 
